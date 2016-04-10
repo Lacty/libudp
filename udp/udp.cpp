@@ -35,7 +35,7 @@ void Udp::initAddr(u_short port, const std::string& ip) {
   port_ = port;
   ip_ = ip;
 
-  bool is_host = ip_.size() <= 0;
+  bool is_host = ip_.empty();
 
   addr_.sin_family = AF_INET;
   addr_.sin_port = htons(port_);
@@ -54,11 +54,16 @@ void Udp::initAddr(u_short port, const std::string& ip) {
   }
 }
 
+
 std::string Udp::recieve() {
   std::string data;
-  data.resize(256);
-  int nrecv = recv(sock_, &data[0], sizeof(data), 0);
+  data.clear();
 
+  char buf[BUF_SIZE + 1];
+
+  int nrecv = recv(sock_, buf, BUF_SIZE, 0);
+
+  data = buf;
   data.resize(nrecv);
 
   // err check
@@ -71,7 +76,7 @@ std::string Udp::recieve() {
 }
 
 void Udp::send(const std::string& data) {
-  int nwrite = sendto(sock_, &data[0], (int)data.size(), 0, (sockaddr*)&addr_, sizeof(addr_));
+  int nwrite = sendto(sock_, data.c_str(), data.length(), 0, (sockaddr*)&addr_, sizeof(addr_));
 
   // err check
   if (nwrite <= 0) {

@@ -14,6 +14,8 @@
 #include <assert.h>
 
 
+const int BUF_SIZE = 256;
+
 class Udp {
 private:
 #if _WINDOWS
