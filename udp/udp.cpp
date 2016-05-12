@@ -11,9 +11,9 @@ Udp::Udp() {
   memset(&addr_, 0, sizeof(addr_));
 #else
   // reset sock var
-  sock_ = 0;
+  //sock_ = 0;
   // clean addr array
-  memset(&addr_, 0, sizeof(addr_));
+  //memset(&addr_, 0, sizeof(addr_));
 #endif
 }
 
@@ -38,12 +38,16 @@ void Udp::closeSock() {
 
 
 void Udp::init(const int port, const std::string& ip) {
+  createSock();
+
   addr_.sin_family = AF_INET;
   addr_.sin_port = htons(port);
   addr_.sin_addr.s_addr = inet_addr(ip.c_str());
 }
 
 void Udp::init(const int port) {
+  createSock();
+
   addr_.sin_family = AF_INET;
   addr_.sin_port = htons(port);
   addr_.sin_addr.s_addr = INADDR_ANY;
@@ -60,8 +64,6 @@ void Udp::recv(std::string& data) {
   memset(buf, 0, sizeof(buf));
 
   int nrecv = ::recv(sock_, buf, BUF_SIZE, 0);
-
-  std::cout << buf << " : " << nrecv << std::endl;
 
   data = buf;
   data.resize(nrecv);
