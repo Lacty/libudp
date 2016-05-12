@@ -19,13 +19,10 @@ Udp::Udp() {
 
 Udp::~Udp() {
   closeSock();
-  WSACleanup();
 }
 
 
 void Udp::createSock() {
-  closeSock();
-
   sock_ = ::socket(AF_INET, SOCK_DGRAM, 0);
   assert(sock_ != 0);
 }
@@ -33,6 +30,7 @@ void Udp::createSock() {
 void Udp::closeSock() {
 #if defined(WIN32) || defined(_WINDOWS)
   closesocket(sock_);
+  WSACleanup();
 #else
   close(sock_);
 #endif
@@ -40,16 +38,12 @@ void Udp::closeSock() {
 
 
 void Udp::init(const int port, const std::string& ip) {
-  createSock();
-
   addr_.sin_family = AF_INET;
   addr_.sin_port = htons(port);
   addr_.sin_addr.s_addr = inet_addr(ip.c_str());
 }
 
 void Udp::init(const int port) {
-  createSock();
-
   addr_.sin_family = AF_INET;
   addr_.sin_port = htons(port);
   addr_.sin_addr.s_addr = INADDR_ANY;
@@ -86,7 +80,7 @@ void Udp::send(const std::string& data) {
 std::string Udp::recv() {
   std::string data;
   this->recv(data);
-  return std::move(data);
+  return data;
 }
 
 // operators
